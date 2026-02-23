@@ -10,4 +10,8 @@
     <ProjectReference Include="..\CourseOnline.Domain\CourseOnline.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Program\Interfaces\IProgramRepository\" />
+  </ItemGroup>
+
 </Project>
