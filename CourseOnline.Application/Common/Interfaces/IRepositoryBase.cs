@@ -2,7 +2,7 @@
 
 public interface IRepositoryBase<TModel, TId>
 {
-    Task<TModel> AddSync(TModel model, CancellationToken ct);
+    Task<TModel> AddASync(TModel model, CancellationToken ct);
     Task<TModel?> GetByIdAsync(TId id, CancellationToken ct);
     Task<IReadOnlyList<TModel>> GetAllAsync(CancellationToken ct);
     Task<TModel?> UpdateAsync(TId id, TModel model, CancellationToken ct);
