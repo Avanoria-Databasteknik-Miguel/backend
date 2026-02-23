@@ -1,3 +1,4 @@
+using CourseOnline.Infrastructure.Extensions;
 using CourseOnline.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<CourseOnlineDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("CourseOnlineDatabase"), 
-        sql => sql
-        .MigrationsAssembly("CourseOnline.Infrastructure")
-    ));
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
