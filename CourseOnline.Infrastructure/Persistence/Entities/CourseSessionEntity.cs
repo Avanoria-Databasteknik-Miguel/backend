@@ -5,10 +5,9 @@ public class CourseSessionEntity
     public CourseEntity Course { get; set; } = null!;
     public Guid CourseId { get; set; }
     public ClassroomEntity Classroom { get; set; } = null!;
-    public int ClassroomId { get; set; } 
-    public string Date { get; set; } = null!;
-    public string StartAt { get; set; } = null!;
-    public string EndAt { get; set; } = null!;
+    public int ClassroomId { get; set; }
+    public DateTime StartDateTimeUtc { get; set; }
+    public DateTime EndDateTimeUtc { get; set; }
     public byte[] RowVersion { get; set; } = null!;
     public DateTime CreatedAtUtc { get; set; }
     public DateTime ModifiedAtUtc { get; set; }

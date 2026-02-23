@@ -8,5 +8,7 @@ public class ProgramEntity
     public byte[] RowVersion { get; set; } = null!;
     public DateTime CreatedAtUtc { get; set; }
     public DateTime ModifiedAtUtc { get; set; }
+    public ICollection<CourseEntity> Courses { get; set; } = [];
+    public ICollection<StudentEntity> Students { get; set; } = [];
 
 }

@@ -5,5 +5,6 @@ public class ClassroomEntity
     public string Name { get; set; } = null!;
     public int Seats { get; set; }
     public FloorEntity Floor { get; set; } = null!;
-    public Guid FloorId { get; set; } 
+    public int FloorId { get; set; }
+    public ICollection<CourseSessionEntity> CourseSessions { get; set; } = [];
 }
