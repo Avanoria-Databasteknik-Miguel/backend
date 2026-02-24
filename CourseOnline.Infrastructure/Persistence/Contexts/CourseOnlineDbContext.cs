@@ -1,7 +1,7 @@
 ﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CourseOnline.Infrastructure.Persistence;
+namespace CourseOnline.Infrastructure.Persistence.Contexts;
 
 public sealed class CourseOnlineDbContext(DbContextOptions<CourseOnlineDbContext> options) : DbContext(options)
 {
