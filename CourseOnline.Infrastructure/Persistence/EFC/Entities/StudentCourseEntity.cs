@@ -1,4 +1,4 @@
-﻿namespace CourseOnline.Infrastructure.Persistence.Entities;
+﻿namespace CourseOnline.Infrastructure.Persistence.EFC.Entities;
 public class StudentCourseEntity
 {
     public StudentEntity Student { get; set; } = null!;

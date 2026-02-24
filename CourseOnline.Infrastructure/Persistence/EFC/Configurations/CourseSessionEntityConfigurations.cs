@@ -1,8 +1,8 @@
-﻿using CourseOnline.Infrastructure.Persistence.Entities;
+﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace CourseOnline.Infrastructure.Persistence.Configurations;
+namespace CourseOnline.Infrastructure.Persistence.EFC.Configurations;
 
 public sealed class CourseSessionEntityConfigurations : IEntityTypeConfiguration<CourseSessionEntity>
 {

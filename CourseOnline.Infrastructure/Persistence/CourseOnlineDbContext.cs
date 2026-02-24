@@ -1,4 +1,4 @@
-﻿using CourseOnline.Infrastructure.Persistence.Entities;
+﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseOnline.Infrastructure.Persistence;
