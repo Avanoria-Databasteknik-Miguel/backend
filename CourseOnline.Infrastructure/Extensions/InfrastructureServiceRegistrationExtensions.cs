@@ -1,4 +1,4 @@
-﻿using CourseOnline.Infrastructure.Persistence;
+﻿using CourseOnline.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

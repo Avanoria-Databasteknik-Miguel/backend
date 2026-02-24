@@ -24,4 +24,8 @@
     <ProjectReference Include="..\CourseOnline.Domain\CourseOnline.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
