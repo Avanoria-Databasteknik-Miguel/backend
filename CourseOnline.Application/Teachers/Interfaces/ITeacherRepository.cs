@@ -2,6 +2,7 @@
 using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Teachers.Interfaces;
-public interface ITeacherRepository : IRepositoryBase<Teacher, string>
+public interface ITeacherRepository : IRepositoryBase<Teacher, Guid>
 {
+    Task<Teacher?> GetByEmailAsync(string email, CancellationToken ct);
 }
