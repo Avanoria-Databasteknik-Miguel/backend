@@ -16,11 +16,12 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
 
         var teacherExits = await teacherRepo.GetByEmailAsync(input.Email, ct);
 
-        if (teacherExits is null) return null!;
+        if (teacherExits is not null) return null!;
 
         var teacher = TeacherFactory.Create(input);
 
         var teacherCreated = await teacherRepo.AddASync(teacher, ct);
+
 
         if (teacherCreated is null) return null!;
 
@@ -72,12 +73,18 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
         return teacher is null ? null : teacher;
     }
 
-    public async Task<Teacher?> UpdateTeacher(UpdateTeacherInput input, CancellationToken ct)
+    public async Task<Teacher?> UpdateTeacherAsync(UpdateTeacherInput input, CancellationToken ct)
     {
-        if (input.Id == Guid.Empty) return null!;
+        if (input.Id == Guid.Empty) return null;
 
-        var teacher = await teacherRepo.GetByIdAsync(input.Id, ct);
+        var teacherToUpdate = await teacherRepo.GetByIdAsync(input.Id, ct);
+        if (teacherToUpdate is null) return null;
 
-        return teacher is null ? null : teacher;
+
+        teacherToUpdate.Update(input.FirstName, input.LastName, input.ImageUrl);
+        teacherToUpdate.SetEmail(input.Email); // only if email is allowed to change
+
+
+        return await teacherRepo.UpdateAsync(input.Id, teacherToUpdate, ct);
     }
 }
