@@ -5,20 +5,20 @@ namespace CourseOnline.Domain.Models;
 public sealed class Teacher
 {
 
-    public string Id { get; }
+    public Guid Id { get; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string Email { get; private set; }
     public string? ImageUrl { get; set; }
 
-    public Teacher(string? id, string firstName, string lastName,string email, string? imageUrl)
+    public Teacher(Guid id, string firstName, string lastName,string email, string? imageUrl)
     {
-        if (string.IsNullOrWhiteSpace(id)) throw new DomainValidationException("Id is required");
+        if (id == Guid.Empty) throw new DomainValidationException("Id is required");
         if (string.IsNullOrWhiteSpace(firstName)) throw new DomainValidationException("First name is required");
         if (string.IsNullOrWhiteSpace(lastName)) throw new DomainValidationException("Last name is required");
         if (string.IsNullOrWhiteSpace(email)) throw new DomainValidationException("Email is required");
 
-        Id = id.Trim();
+        Id = id;
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Email = email.Trim();
