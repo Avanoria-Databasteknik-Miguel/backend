@@ -14,9 +14,9 @@ public sealed class Teacher
     public Teacher(string? id, string firstName, string lastName,string email, string? imageUrl)
     {
         if (string.IsNullOrWhiteSpace(id)) throw new DomainValidationException("Id is required");
-        if (string.IsNullOrWhiteSpace(FirstName)) throw new DomainValidationException("First name is required");
-        if (string.IsNullOrWhiteSpace(LastName)) throw new DomainValidationException("Last name is required");
-        if (string.IsNullOrWhiteSpace(Email)) throw new DomainValidationException("Email is required");
+        if (string.IsNullOrWhiteSpace(firstName)) throw new DomainValidationException("First name is required");
+        if (string.IsNullOrWhiteSpace(lastName)) throw new DomainValidationException("Last name is required");
+        if (string.IsNullOrWhiteSpace(email)) throw new DomainValidationException("Email is required");
 
         Id = id.Trim();
         FirstName = firstName.Trim();
