@@ -9,6 +9,6 @@ public interface ITeacherService
     Task<Teacher?> GetTeacherByIdAsync(Guid id, CancellationToken ct);
     Task<Teacher?> GetTeacherByEmail(string email, CancellationToken ct);
     Task<IReadOnlyCollection<Teacher>> GetTeachersAsync(CancellationToken ct);
-    Task<Teacher?> UpdateTeacher(UpdateTeacherInput input, CancellationToken ct);
+    Task<Teacher?> UpdateTeacherAsync(UpdateTeacherInput input, CancellationToken ct);
     Task<bool> DeleteTeacherAsync(Guid id, CancellationToken ct);
 }
