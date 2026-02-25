@@ -1,4 +1,6 @@
-﻿using CourseOnline.Infrastructure.Persistence.Contexts;
+﻿using CourseOnline.Application.Teachers.Interfaces;
+using CourseOnline.Infrastructure.Persistence.Contexts;
+using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,11 +12,11 @@ public static class InfrastructureServiceRegistrationExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
 
-            services.AddDbContext<CourseOnlineDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("CourseOnlineDatabase")));
+        services.AddDbContext<CourseOnlineDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("CourseOnlineDatabase")));
    
 
-        //TODO: Add repositories t.ex:  services.AddScoped<IInstructorRepository, InstructorRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
 
         return services;
     }
