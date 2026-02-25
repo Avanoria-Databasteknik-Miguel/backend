@@ -56,6 +56,6 @@ public abstract class RepositoryBase<TModel, TId, TEntity, TDbContext>(TDbContex
 
         await Context.SaveChangesAsync(ct); //Skall göra i Application(Service)??
 
-        return ToModel(entity);
+        return ToModel(updated);
     }
 }

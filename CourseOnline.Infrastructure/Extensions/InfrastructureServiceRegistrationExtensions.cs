@@ -1,4 +1,6 @@
-﻿using CourseOnline.Application.Teachers.Interfaces;
+﻿using CourseOnline.Application.Contracts.Teachers;
+using CourseOnline.Application.Services;
+using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,8 @@ public static class InfrastructureServiceRegistrationExtensions
    
 
         services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<ITeacherService, TeacherService>();
+
 
         return services;
     }

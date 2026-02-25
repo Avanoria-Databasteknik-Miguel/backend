@@ -22,7 +22,7 @@ public sealed class Teacher
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Email = email.Trim();
-        ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? "No image url" : imageUrl.Trim();
+        ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl.Trim();
     }
 
     public void SetEmail(string email)
