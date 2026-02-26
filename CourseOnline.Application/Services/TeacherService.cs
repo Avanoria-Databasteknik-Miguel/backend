@@ -1,4 +1,5 @@
-﻿using CourseOnline.Application.Contracts.Teachers;
+﻿using CourseOnline.Application.Common.Results;
+using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Factories;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Application.Teachers.Interfaces;
@@ -8,43 +9,43 @@ namespace CourseOnline.Application.Services;
 
 public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherService
 {
-    public async Task<Teacher?> CreateTeacherAsync(CreateTeacherInput input, CancellationToken ct)
+    public async Task<Result<Teacher>> CreateTeacherAsync(CreateTeacherInput input, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(input.FirstName)) return null!;
-        if (string.IsNullOrWhiteSpace(input.LastName)) return null!;
-        if (string.IsNullOrWhiteSpace(input.Email)) return null!;
+        if (string.IsNullOrWhiteSpace(input.FirstName)) return Result<Teacher>.BadRequest("First name is required.");
+        if (string.IsNullOrWhiteSpace(input.LastName)) return Result<Teacher>.BadRequest("Last name is required.");
+        if (string.IsNullOrWhiteSpace(input.Email)) return Result<Teacher>.BadRequest("Email is required.");
 
         var teacherExits = await teacherRepo.GetByEmailAsync(input.Email, ct);
 
-        if (teacherExits is not null) return null!;
+        if (teacherExits is not null) return Result<Teacher>.Conflict("Teacher already exist");
 
         var teacher = TeacherFactory.Create(input);
 
         var teacherCreated = await teacherRepo.AddASync(teacher, ct);
 
 
-        if (teacherCreated is null) return null!;
+        //if (teacherCreated is null) return Result<Teacher>.Conflict("Something wrong happened");
 
         //TODO: cache stuff.
 
-        return teacherCreated;
+        return Result<Teacher>.Ok(teacherCreated);
     }
 
-    public async Task<bool> DeleteTeacherAsync(Guid id, CancellationToken ct)
+    public async Task<Result> DeleteTeacherAsync(Guid id, CancellationToken ct)
     {
-        if (id == Guid.Empty) return false;
+        if (id == Guid.Empty) return Result.BadRequest("Email is required.");
 
         var teacherToDelete = await teacherRepo.GetByIdAsync(id, ct);
 
-        if (teacherToDelete is null) return false;
+        if (teacherToDelete is null) return Result.BadRequest("Teacher id doesn't exist, can't delete teacher.");
         
         var deleted = await teacherRepo.RemoveAsync(teacherToDelete.Id, ct);
 
-        if (!deleted) return false;
+        if (!deleted) return Result.BadRequest("Something went wrong");
 
         //Todo: Cache stuff;
 
-        return true;
+        return Result.Ok();
 
     }
 
@@ -55,36 +56,41 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
         return teachers.Any() ? teachers : [];
     }
 
-    public async Task<Teacher?> GetTeacherByEmail(string email, CancellationToken ct)
+    public async Task<Result<Teacher>> GetTeacherByEmail(string email, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(email)) return null!;
+        if (string.IsNullOrWhiteSpace(email)) return Result<Teacher>.BadRequest("Email is required.");
 
         var teacher = await teacherRepo.GetByEmailAsync(email, ct);
 
-        return teacher is null ? null : teacher;
+        return teacher is null ? Result<Teacher>.Conflict("Something wrong happened") : Result<Teacher>.Ok(teacher);
     }
 
-    public async Task<Teacher?> GetTeacherByIdAsync(Guid id, CancellationToken ct)
+    public async Task<Result<Teacher>> GetTeacherByIdAsync(Guid id, CancellationToken ct)
     {
         if (id == Guid.Empty) return null!;
 
         var teacher = await teacherRepo.GetByIdAsync(id, ct);
 
-        return teacher is null ? null : teacher;
+        return teacher is null ? Result<Teacher>.Conflict("Teacher not found") : Result<Teacher>.Ok(teacher);
     }
 
-    public async Task<Teacher?> UpdateTeacherAsync(UpdateTeacherInput input, CancellationToken ct)
+    public async Task<Result<Teacher>> UpdateTeacherAsync(UpdateTeacherInput input, CancellationToken ct)
     {
-        if (input.Id == Guid.Empty) return null;
+        if (input.Id == Guid.Empty) return Result<Teacher>.BadRequest("Id required");
 
         var teacherToUpdate = await teacherRepo.GetByIdAsync(input.Id, ct);
-        if (teacherToUpdate is null) return null;
+        if (teacherToUpdate is null) return Result<Teacher>.BadRequest("Teacher not found");
 
 
         teacherToUpdate.Update(input.FirstName, input.LastName, input.ImageUrl);
         teacherToUpdate.SetEmail(input.Email); // only if email is allowed to change
 
+        var updatedTeacher = await teacherRepo.UpdateAsync(input.Id, teacherToUpdate, ct);
 
-        return await teacherRepo.UpdateAsync(input.Id, teacherToUpdate, ct);
+
+
+        return updatedTeacher is null ? Result<Teacher>.Conflict("Something wrong happened") : Result<Teacher>.Ok(updatedTeacher);
+
+
     }
 }
