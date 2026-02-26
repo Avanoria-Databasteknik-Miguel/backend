@@ -10,6 +10,6 @@ public interface IProgramService
     Task<Result<Program>> GetProgramByIdAsync(Guid id, CancellationToken ct);
     Task<Result<Program>> GetProgramByNameAsync(string name, CancellationToken ct);
     Task<Result<Program>> UpdateProgramAsync(UpdateProgramInput input, CancellationToken ct);
-    Task<Result> DeleteProgramAsync(DeleteProgramInput id);
+    Task<Result> DeleteProgramAsync(DeleteProgramInput id, CancellationToken ct);
     Task<Result<IReadOnlyCollection<Program>>> GetAllProgramsAsync(CancellationToken ct);
 }
