@@ -1,5 +1,4 @@
 ﻿using CourseOnline.Domain.Exceptions;
-using System.Security.Cryptography.X509Certificates;
 
 namespace CourseOnline.Domain.Models;
 public sealed class Teacher
