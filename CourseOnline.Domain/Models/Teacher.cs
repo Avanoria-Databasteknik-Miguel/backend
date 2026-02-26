@@ -29,7 +29,7 @@ public sealed class Teacher
         if (string.IsNullOrWhiteSpace(email))
             throw new DomainValidationException("Email is required.");
 
-        Email = email;
+        Email = email.Trim();
     }
 
     public void Update(string firstName, string lastName, string? imageUrl)
