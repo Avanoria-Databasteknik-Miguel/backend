@@ -1,5 +1,4 @@
-﻿using CourseOnline.Application.Common.Results;
-using CourseOnline.Application.Programs.Interfaces;
+﻿using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Domain.Models;
 using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Entities;
