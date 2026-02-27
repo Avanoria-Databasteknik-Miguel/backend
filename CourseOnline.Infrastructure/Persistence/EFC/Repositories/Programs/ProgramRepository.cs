@@ -25,9 +25,9 @@ public class ProgramRepository(CourseOnlineDbContext context) : RepositoryBase<P
         return new Program(entity.Id, entity.Name, entity.DurationWeeks, entity.MaxStudents);
     }
 
-    public async Task<Result<Program>> GetByNameAsync(string name, CancellationToken ct)
+    public async Task<Program?> GetByNameAsync(string name, CancellationToken ct)
     {
         var entity = await Context.Programs.AsNoTracking().SingleOrDefaultAsync(x => x.Name == name, ct);
-        return entity is null ? Result<Program>.NotFound("Program not found") : Result<Program>.Ok(ToModel(entity));
+        return entity is null ? null : ToModel(entity);
     }
 }
