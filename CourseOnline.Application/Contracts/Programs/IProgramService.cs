@@ -1,7 +1,6 @@
 ﻿using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Programs.DTOs.Inputs;
 using CourseOnline.Domain.Models;
-using System.Net.Http.Headers;
 
 namespace CourseOnline.Application.Contracts.Programs;
 public interface IProgramService
