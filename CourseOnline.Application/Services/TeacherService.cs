@@ -4,6 +4,7 @@ using CourseOnline.Application.Factories;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Domain.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CourseOnline.Application.Services;
 
@@ -49,11 +50,11 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
 
     }
 
-    public async Task<IReadOnlyCollection<Teacher>> GetTeachersAsync(CancellationToken ct)
+    public async Task<Result<IReadOnlyCollection<Teacher>>> GetTeachersAsync(CancellationToken ct)
     {
         var teachers = await teacherRepo.GetAllAsync(ct);
 
-        return teachers.Any() ? teachers : [];
+        return Result<IReadOnlyCollection<Teacher>>.Ok(teachers); ;
     }
 
     public async Task<Result<Teacher>> GetTeacherByEmail(string email, CancellationToken ct)
