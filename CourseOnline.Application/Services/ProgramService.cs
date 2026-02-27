@@ -58,7 +58,7 @@ public sealed class ProgramService(IProgramRepository programRepo) : IProgramSer
 
         var program = await programRepo.GetByIdAsync(id, ct);
 
-        return program is null ? Result<Program>.Conflict("Something wrong happened") : Result<Program>.Ok(program);
+        return program is null ? Result<Program>.NotFound("Program not found") : Result<Program>.Ok(program);
     }
 
     public async Task<Result<Program>> GetProgramByNameAsync(string name, CancellationToken ct)
