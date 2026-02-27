@@ -1,4 +1,5 @@
 ﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
+using CourseOnline.Infrastructure.Persistence.EFC.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -37,19 +38,7 @@ public class TeacherEntityConfigurations : IEntityTypeConfiguration<TeacherEntit
             .HasMaxLength(500)
             .IsRequired(false);
 
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion()
-            .IsRequired();
-
-        builder.Property(x => x.CreatedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAdd();
-
-        builder.Property(x => x.ModifiedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAddOrUpdate();
+        builder.ConfigureAuditable();
 
         //builder.HasIndex(x => new { x.FirstName, x.LastName });
     }
