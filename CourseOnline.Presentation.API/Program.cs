@@ -1,8 +1,11 @@
+using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Teachers;
+using CourseOnline.Application.Programs.DTOs.Inputs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Domain.Models;
 using CourseOnline.Infrastructure.Extensions;
 using CourseOnline.Infrastructure.Persistence;
+using CourseOnline.Presentation.API.Models.Programs;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
@@ -21,6 +24,10 @@ app.MapOpenApi();
 
 app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
+
+
+//      ##### TEACHERS #####
 
 app.MapPost("/api/teachers", async (
     CreateTeacherInput input,
@@ -59,6 +66,58 @@ app.MapDelete("/api/teachers/{id:Guid}", async (Guid id, ITeacherService service
     var deleted = await service.DeleteTeacherAsync(id, ct);
 
     return Results.Ok(deleted);
+});
+
+
+
+//      ##### PROGRAMS #####
+
+app.MapPost("/api/programs", async (CreateProgramRequest req, IProgramService service, CancellationToken ct) =>
+{
+
+    var ToInput = new CreateProgramInput(req.Name, req.DurationWeeks, req.MaxStudent);
+
+    
+    var program = await service.CreateProgramAsync(ToInput, ct);
+
+    if (!program.Success) Results.BadRequest(program.ErrorMessage);
+
+    
+
+    return Results.Created($"/api/programs/{program.Value.Id}", program);
+
+});
+
+app.MapGet("/api/programs", async (IProgramService service, CancellationToken ct) =>
+{
+    var programs = await service.GetAllProgramsAsync(ct);
+
+    return Results.Ok(programs.Value);
+});
+
+
+app.MapPut("/api/programs/{id:Guid}", async (Guid id, IProgramService service, CancellationToken ct) =>
+{
+    var program = await service.GetProgramByIdAsync(id, ct);
+
+    if (!program.Success) Results.NotFound(program.ErrorMessage);
+
+    return Results.Ok(program.Value);
+});
+
+
+app.MapDelete("/api/programs/{id:Guid}", async (Guid id, IProgramService service, CancellationToken ct) =>
+{
+    var program = await service.GetProgramByIdAsync(id, ct);
+
+    if (!program.Success) return Results.BadRequest(program.ErrorMessage);
+
+    var programId = new DeleteProgramInput(program.Value.Id);
+
+    var deleted = await service.DeleteProgramAsync(programId, ct);
+
+    return Results.Ok();
+
 });
 
 

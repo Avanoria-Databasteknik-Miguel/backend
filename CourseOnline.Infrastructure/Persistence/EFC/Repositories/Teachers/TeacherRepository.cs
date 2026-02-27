@@ -3,7 +3,6 @@ using CourseOnline.Domain.Models;
 using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
 
