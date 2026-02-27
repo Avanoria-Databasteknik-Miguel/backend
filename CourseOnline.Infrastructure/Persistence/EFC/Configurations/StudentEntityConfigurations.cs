@@ -1,4 +1,5 @@
 ﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
+using CourseOnline.Infrastructure.Persistence.EFC.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -46,14 +47,6 @@ public class StudentEntityConfigurations : IEntityTypeConfiguration<StudentEntit
             .IsRowVersion()
             .IsRequired();
 
-        builder.Property(x => x.CreatedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAdd();
-
-        builder.Property(x => x.ModifiedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAddOrUpdate();
+        builder.ConfigureAuditable();
     }
 }

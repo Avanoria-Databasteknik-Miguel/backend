@@ -1,4 +1,5 @@
 ﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
+using CourseOnline.Infrastructure.Persistence.EFC.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -35,5 +36,7 @@ public sealed class CourseEntityConfigurations : IEntityTypeConfiguration<Course
             .HasForeignKey(x => x.ProgramId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ConfigureAuditable();
     }
 }
