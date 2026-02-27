@@ -4,9 +4,9 @@ namespace CourseOnline.Domain.Models;
 public sealed class Program
 {
     public Guid Id { get; }
-    public string Name { get; set; } = null!;
-    public int? DurationWeeks { get; set; }
-    public int? MaxStudents { get; set; }
+    public string Name { get; private set; } = null!;
+    public int? DurationWeeks { get; private set; }
+    public int? MaxStudents { get; private set; }
 
     public Program(Guid id, string name, int? durationWeeks, int? maxStudents)
     {
