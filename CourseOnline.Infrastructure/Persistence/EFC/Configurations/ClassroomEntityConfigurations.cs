@@ -1,4 +1,5 @@
 ﻿using CourseOnline.Infrastructure.Persistence.EFC.Entities;
+using CourseOnline.Infrastructure.Persistence.EFC.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,6 +29,8 @@ public sealed class ClassroomEntityConfigurations : IEntityTypeConfiguration<Cla
             .WithMany(x => x.Classrooms) 
             .HasForeignKey(x => x.FloorId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ConfigureAuditable();
 
     }
 
