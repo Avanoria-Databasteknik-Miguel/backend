@@ -1,5 +1,7 @@
-﻿namespace CourseOnline.Infrastructure.Persistence.EFC.Entities;
-public class CourseSessionEntity
+﻿using CourseOnline.Infrastructure.Common.Entities;
+
+namespace CourseOnline.Infrastructure.Persistence.EFC.Entities;
+public class CourseSessionEntity : AuditableEntity
 {
     public Guid Id { get; set; }
     public CourseEntity Course { get; set; } = null!;
