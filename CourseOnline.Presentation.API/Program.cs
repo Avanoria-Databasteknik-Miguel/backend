@@ -1,4 +1,3 @@
-using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Programs.DTOs.Inputs;
