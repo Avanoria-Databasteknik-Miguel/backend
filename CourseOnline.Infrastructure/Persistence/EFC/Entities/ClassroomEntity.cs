@@ -1,5 +1,7 @@
-﻿namespace CourseOnline.Infrastructure.Persistence.EFC.Entities;
-public class ClassroomEntity
+﻿using CourseOnline.Infrastructure.Common.Entities;
+
+namespace CourseOnline.Infrastructure.Persistence.EFC.Entities;
+public class ClassroomEntity : AuditableEntity
 {
     public int Id { get; set; }
     public string Name { get; set; } = null!;
