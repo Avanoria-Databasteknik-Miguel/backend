@@ -63,11 +63,11 @@ public sealed class ProgramService(IProgramRepository programRepo) : IProgramSer
 
     public async Task<Result<Program>> GetProgramByNameAsync(string name, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(name)) return null!;
+        if (string.IsNullOrWhiteSpace(name)) return Result<Program>.BadRequest("Name is required.");
 
         var program = await programRepo.GetByNameAsync(name, ct);
 
-        return program.Value is null ? Result<Program>.Conflict("Program not found") : Result<Program>.Ok(program.Value);
+        return program is null ? Result<Program>.NotFound("Program not found") : Result<Program>.Ok(program);
     }
 
     public async Task<Result<Program>> UpdateProgramAsync(UpdateProgramInput input, CancellationToken ct)
