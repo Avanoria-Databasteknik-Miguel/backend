@@ -1,3 +1,4 @@
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Programs.DTOs.Inputs;
@@ -6,6 +7,7 @@ using CourseOnline.Domain.Models;
 using CourseOnline.Infrastructure.Extensions;
 using CourseOnline.Infrastructure.Persistence;
 using CourseOnline.Presentation.API.Models.Programs;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
@@ -75,12 +77,12 @@ app.MapDelete("/api/teachers/{id:Guid}", async (Guid id, ITeacherService service
 app.MapPost("/api/programs", async (CreateProgramRequest req, IProgramService service, CancellationToken ct) =>
 {
 
-    var ToInput = new CreateProgramInput(req.Name, req.DurationWeeks, req.MaxStudent);
+    var ToInput = new CreateProgramInput(req.Name, req.DurationWeeks, req.MaxStudents);
 
     
     var program = await service.CreateProgramAsync(ToInput, ct);
 
-    if (!program.Success) Results.BadRequest(program.ErrorMessage);
+    if (!program.Success) return Results.BadRequest(program.ErrorMessage);
 
     
 
@@ -96,13 +98,22 @@ app.MapGet("/api/programs", async (IProgramService service, CancellationToken ct
 });
 
 
-app.MapPut("/api/programs/{id:Guid}", async (Guid id, IProgramService service, CancellationToken ct) =>
+app.MapPut("/api/programs/{id:Guid}", async (Guid id, UpdateProgramInput input, IProgramService service, CancellationToken ct) =>
 {
-    var program = await service.GetProgramByIdAsync(id, ct);
+    var cmd = input with { Id = id };
 
-    if (!program.Success) Results.NotFound(program.ErrorMessage);
+    var updated = await service.UpdateProgramAsync(cmd, ct);
 
-    return Results.Ok(program.Value);
+    if (!updated.Success)
+        return updated.ErrorType switch
+        {
+            ErrorTypes.BadRequest => Results.BadRequest(updated.ErrorMessage),
+            ErrorTypes.NotFound => Results.NotFound(updated.ErrorMessage),
+            ErrorTypes.Conflict => Results.Conflict(updated.ErrorMessage),
+            _ => Results.Problem(updated.ErrorMessage)
+        };
+
+    return Results.Ok(updated.Value);
 });
 
 
