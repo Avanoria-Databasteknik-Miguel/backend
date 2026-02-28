@@ -1,10 +1,13 @@
 ﻿using CourseOnline.Application.Contracts.Programs;
+using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Application.Services;
+using CourseOnline.Application.Students.Interfaces;
 using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Programs;
+using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Students;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +28,10 @@ public static class InfrastructureServiceRegistrationExtensions
         services.AddScoped<ITeacherService, TeacherService>();
 
         services.AddScoped<IProgramRepository, ProgramRepository>();
-
         services.AddScoped<IProgramService, ProgramService>();
+
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IStudentService, StudentService>();
 
 
         return services;
