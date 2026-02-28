@@ -18,9 +18,9 @@ public sealed class Teacher
         if (string.IsNullOrWhiteSpace(email)) throw new DomainValidationException("Email is required");
 
         Id = id;
-        FirstName = firstName.Trim();
-        LastName = lastName.Trim();
-        Email = email.Trim();
+        FirstName = firstName.Trim().ToLower();
+        LastName = lastName.Trim().ToLower();
+        Email = email.Trim().ToLower();
         ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl.Trim();
     }
 
@@ -40,9 +40,9 @@ public sealed class Teacher
         if (string.IsNullOrWhiteSpace(lastName))
             throw new DomainValidationException("LastName is required.");
 
-        FirstName = firstName.Trim();
-        LastName = lastName.Trim();
-        ImageUrl = imageUrl?.Trim();
+        FirstName = firstName.Trim().ToLower();
+        LastName = lastName.Trim().ToLower();
+        ImageUrl = imageUrl?.Trim().ToLower();
     }
 
 }
