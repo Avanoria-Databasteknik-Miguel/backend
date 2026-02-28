@@ -5,5 +5,6 @@ using CourseOnline.Domain.Models;
 namespace CourseOnline.Application.Students.Interfaces;
 public interface IStudentRepository : IRepositoryBase<Student, Guid>
 {
+    Task<Student?> GetByEmailAsync(string email, CancellationToken ct);
 
 }
