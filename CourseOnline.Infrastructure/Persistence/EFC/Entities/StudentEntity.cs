@@ -11,7 +11,4 @@ public class StudentEntity : AuditableEntity
     public Guid ProgramId { get; set; }
     public ICollection<StudentCourseEntity> StudentCourses { get; set; } = [];
     public string? ImageUrl { get; set; }
-    public byte[] RowVersion { get; set; } = null!;
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime ModifiedAtUtc { get; set; }
 }
