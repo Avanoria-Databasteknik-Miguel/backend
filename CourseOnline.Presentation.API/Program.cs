@@ -1,10 +1,15 @@
 using CourseOnline.Application.Contracts.Programs;
+using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Programs.DTOs.Inputs;
+using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Infrastructure.Extensions;
 using CourseOnline.Presentation.API.Common;
 using CourseOnline.Presentation.API.Models.Programs;
+using CourseOnline.Presentation.API.Models.Students;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -123,5 +128,54 @@ app.MapDelete("/api/programs/{id:Guid}", async (
     return deleted.ToHttpResult();
 });
 
+
+
+//      ##### STUDENTS #####
+
+
+app.MapPost("/api/students", async (
+    CreateStudentRequest req,
+    IStudentService service,
+    CancellationToken ct) =>
+{
+    var ToInput = new CreateStudentInput(req.FirstName, req.LastName, req.Email, req.ImageUrl, req.ProgramId);
+
+    var student = await service.CreateStudentAsync(ToInput, ct);
+
+    if (student.Success)
+        return Results.Created($"/api/students/{student.Value!.Id}", student.Value);
+
+    return student.ToHttpResult();
+
+});
+
+app.MapGet("/api/students", async (IStudentService service, CancellationToken ct) =>
+{
+    var students = await service.GetStudentsAsync(ct);
+
+    return students.ToHttpResult();
+});
+
+app.MapPut("/api/students/{id:Guid}", async (Guid id, UpdateStudentRequest request, IStudentService service, CancellationToken ct) =>
+{
+    var student = await service.GetStudentByIdAsync(id, ct);
+
+    if (!student.Success) return student.ToHttpResult();
+
+    var updated = await service.UpdateStudentAsync(new UpdateStudentInput(id, request.FirstName, request.LastName, request.Email, request.ImageUrl, request.ProgramId), ct);
+
+    return updated.ToHttpResult();
+});
+
+app.MapDelete("/api/students/{id:Guid}", async (Guid id, IStudentService service, CancellationToken ct) =>
+{
+    var student = await service.GetStudentByIdAsync(id, ct);
+
+    if (!student.Success) return student.ToHttpResult();
+
+    var deleted = await service.DeleteStudentAsync(id, ct);
+
+    return deleted.ToHttpResult();
+});
 
 app.Run();
