@@ -1,11 +1,14 @@
+using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
+using CourseOnline.Application.Courses.DTOs.Inputs;
 using CourseOnline.Application.Programs.DTOs.Inputs;
 using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Infrastructure.Extensions;
 using CourseOnline.Presentation.API.Common;
+using CourseOnline.Presentation.API.Models.Courses;
 using CourseOnline.Presentation.API.Models.Programs;
 using CourseOnline.Presentation.API.Models.Students;
 
@@ -174,6 +177,48 @@ app.MapDelete("/api/students/{id:Guid}", async (Guid id, IStudentService service
     if (!student.Success) return student.ToHttpResult();
 
     var deleted = await service.DeleteStudentAsync(id, ct);
+
+    return deleted.ToHttpResult();
+});
+
+
+//      ##### COURSES #####
+
+app.MapPost("/api/courses", async (CreateCourseRequest input, ICourseService service, CancellationToken ct) =>
+{
+var toInput = new CreateCourseInput(input.Name, input.DurationWeeks, input.MaxStudents, input.TeacherId, input.ProgramId);
+
+var course = await service.CreateCourseAsync(toInput, ct);
+
+    return course.Success ? Results.Created($"/api/courses/{course.Value!.Id}", course.Value) : course.ToHttpResult();
+});
+
+app.MapGet("/api/courses", async (ICourseService serivce, CancellationToken ct) => {
+    var courses = await serivce.GetAllCoursesAsync(ct);
+
+    return courses.ToHttpResult();
+});
+
+app.MapPut("/api/courses/{id:Guid}", async (Guid id, UpdateCourseInput input, ICourseService service, CancellationToken ct) =>
+{
+
+    var cmd = input with { Id = id };
+
+    var course = await service.GetCourseByIdAsync(cmd.Id, ct);
+
+    if (!course.Success) return course.ToHttpResult();
+
+    var updated = await service.UpdateCourseAsync(cmd, ct);
+    return updated.ToHttpResult();
+});
+
+app.MapDelete("/api/courses/{id:Guid}", async (Guid id, ICourseService service, CancellationToken ct) =>
+{
+    var course = await service.GetCourseByIdAsync(id, ct);
+
+    if (!course.Success) return course.ToHttpResult();
+
+    var deleted = await service.DeleteCourseAsync(new DeleteCourseInput(id), ct);
 
     return deleted.ToHttpResult();
 });
