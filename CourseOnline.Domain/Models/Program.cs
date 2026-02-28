@@ -16,7 +16,7 @@ public sealed class Program
         if (maxStudents is not null && maxStudents <= 0) throw new DomainValidationException("MaxStudents must be greater than 0");
 
         Id = id;
-        Name = name.Trim();
+        Name = name.Trim().ToLower();
         DurationWeeks = durationWeeks;
         MaxStudents = maxStudents;
     }
@@ -27,7 +27,7 @@ public sealed class Program
         if (durationWeeks is not null && durationWeeks <= 0) throw new DomainValidationException("DurationWeeks must be greater than 0");
         if (maxStudents is not null && maxStudents <= 0) throw new DomainValidationException("MaxStudents must be greater than 0");
 
-        Name = name.Trim();
+        Name = name.Trim().ToLower();
         DurationWeeks = durationWeeks;
         MaxStudents = maxStudents;
     }
