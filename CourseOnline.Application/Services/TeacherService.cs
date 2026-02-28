@@ -72,7 +72,7 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
 
         var teacher = await teacherRepo.GetByIdAsync(id, ct);
 
-        return teacher is null ? Result<Teacher>.Conflict("Teacher not found") : Result<Teacher>.Ok(teacher);
+        return teacher is null ? Result<Teacher>.NotFound("Teacher not found") : Result<Teacher>.Ok(teacher);
     }
 
     public async Task<Result<Teacher>> UpdateTeacherAsync(UpdateTeacherInput input, CancellationToken ct)
