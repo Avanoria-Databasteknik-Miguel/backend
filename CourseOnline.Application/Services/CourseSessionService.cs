@@ -3,6 +3,7 @@ using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Courses.Interfaces;
 using CourseOnline.Application.CourseSessions.DTOs.Inputs;
+using CourseOnline.Application.CourseSessions.DTOs.Outputs;
 using CourseOnline.Application.CourseSessions.Interfaces;
 using CourseOnline.Application.Factories;
 using CourseOnline.Domain.Models;
@@ -84,4 +85,38 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
 
         return Result<IReadOnlyCollection<CourseSession>>.Ok(courseSessions);
     }
+
+    public async Task<Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>> GetCourseSessionsByCourseIdAsync(Guid courseId, CancellationToken ct)
+    {
+        if (courseId == Guid.Empty)
+            return Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>.BadRequest("CourseId is required.");
+
+        // 1) Hämta kursen (för att kunna stoppa in hela objektet)
+        var course = await courseRepo.GetByIdAsync(courseId, ct);
+        if (course is null)
+            return Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>.NotFound("Course not found.");
+
+        // 2) Hämta alla sessions för kursen
+        var sessionsResult = await courseSessionRepo.GetByCourseIdAsync(courseId, ct);
+        if (!sessionsResult.Success)
+            return Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>.NotFound("Course sessions not found.");
+
+        var sessions = sessionsResult.Value ?? [];
+
+        // 3) Mappa till “expanded output”
+        IReadOnlyCollection<CourseSessionWithCourseOutput> output = sessions
+            .Select(s => new CourseSessionWithCourseOutput(
+                s.Id,
+                s.CourseId,
+                s.ClassroomId,
+                s.StartDateTimeUtc,
+                s.EndDateTimeUtc,
+                course
+            ))
+            .ToList();
+
+        return Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>.Ok(output);
+    }
+
+
 }
