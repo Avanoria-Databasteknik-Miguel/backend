@@ -1,8 +1,10 @@
 using CourseOnline.Application.Contracts.Courses;
+using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Courses.DTOs.Inputs;
+using CourseOnline.Application.CourseSessions.DTOs.Inputs;
 using CourseOnline.Application.Programs.DTOs.Inputs;
 using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
@@ -219,6 +221,76 @@ app.MapDelete("/api/courses/{id:Guid}", async (Guid id, ICourseService service, 
     if (!course.Success) return course.ToHttpResult();
 
     var deleted = await service.DeleteCourseAsync(new DeleteCourseInput(id), ct);
+
+    return deleted.ToHttpResult();
+});
+
+
+//      ##### COURSES SESSIONS #####
+
+app.MapPost("/api/course-sessions", async (
+    CreateCourseSessionInput input,
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+var created = await service.CreateCourseSessionAsync(input, ct);
+
+return created.Success
+    ? Results.Created($"/api/course-sessions/{created.Value!.Id}", created.Value)
+    : created.ToHttpResult();
+});
+
+
+app.MapGet("/api/course-sessions", async (
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+var sessions = await service.GetAllCourseSessionsAsync(ct);
+
+return sessions.ToHttpResult();
+});
+
+app.MapGet("/api/course-sessions/by-course/{courseId:Guid}", async (
+    Guid courseId,
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+    var sessions = await service.GetCourseSessionsByCourseIdAsync(courseId, ct);
+    return sessions.ToHttpResult();
+});
+
+
+app.MapGet("/api/course-sessions/{id:Guid}", async (
+    Guid id,
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+var session = await service.GetCourseSessionByIdAsync(id, ct);
+
+return session.ToHttpResult();
+});
+
+
+app.MapPut("/api/course-sessions/{id:Guid}", async (
+    Guid id,
+    UpdateCourseSessionInput input,
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+var cmd = input with { Id = id };
+
+var updated = await service.UpdateCourseSessionAsync(cmd, ct);
+
+return updated.ToHttpResult();
+});
+
+
+app.MapDelete("/api/course-sessions/{id:Guid}", async (
+    Guid id,
+    ICourseSessionService service,
+    CancellationToken ct) =>
+{
+    var deleted = await service.DeleteCourseSessionAsync(new DeleteCourseSessionInput(id), ct);
 
     return deleted.ToHttpResult();
 });
