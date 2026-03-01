@@ -1,11 +1,14 @@
 ﻿using CourseOnline.Application.Classrooms.Interfaces;
+using CourseOnline.Application.Contracts.Classrooms;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
+using CourseOnline.Application.Contracts.Floors;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Courses.Interfaces;
 using CourseOnline.Application.CourseSessions.Interfaces;
+using CourseOnline.Application.Floors.Interfaces;
 using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Application.Services;
 using CourseOnline.Application.Students.Interfaces;
@@ -14,6 +17,7 @@ using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Classrooms;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Courses;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.CourseSessions;
+using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Floors;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Programs;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Students;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
@@ -48,8 +52,10 @@ public static class InfrastructureServiceRegistrationExtensions
         services.AddScoped<ICourseSessionService, CourseSessionService>();
 
         services.AddScoped<IClassroomsRepository, ClassroomRepository>();
-    
+        services.AddScoped<IClassroomService, ClassroomService>();
 
+        services.AddScoped<IFloorRepository, FloorRepository>();
+        services.AddScoped<IFloorService, FloorService>();
 
         return services;
     }
