@@ -5,5 +5,5 @@ using CourseOnline.Domain.Models;
 namespace CourseOnline.Application.CourseSessions.Interfaces;
 public interface ICourseSessionRepository : IRepositoryBase<CourseSession, Guid>
 {
-    Task<Result<CourseSession>> GetByCourseIdAsync(Guid courseId, CancellationToken ct);
+    Task<Result<IReadOnlyCollection<CourseSession>>> GetByCourseIdAsync(Guid courseId, CancellationToken ct);
 }
