@@ -4,6 +4,7 @@ using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Contracts.Floors;
 using CourseOnline.Application.Contracts.Programs;
+using CourseOnline.Application.Contracts.Registrations;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Courses.DTOs.Inputs;
@@ -376,6 +377,36 @@ app.MapDelete("/api/floors/{id:int}", async (int id, IFloorService service, Canc
 {
     var deleted = await service.DeleteFloorAsync(id, ct);
     return deleted.ToHttpResult();
+});
+
+
+// ##### REGISTRATIONS/COURSE-SESSION-STUDENTS #####
+
+app.MapPost("/api/course-sessions/{sessionId:Guid}/students/{studentId:Guid}", async (Guid sessionId, Guid studentId, IRegistrationService service, CancellationToken ct) =>
+{
+    var created = await service.RegisterStudentAsync(sessionId, studentId, ct);
+
+    return created.Success
+        ? Results.Created($"/api/course-sessions/{sessionId}/students/{studentId}", created.Value)
+        : created.ToHttpResult();
+});
+
+app.MapDelete("/api/course-sessions/{sessionId:Guid}/students/{studentId:Guid}", async (Guid sessionId, Guid studentId, IRegistrationService service, CancellationToken ct) =>
+{
+    var deleted = await service.UnregisterStudentAsync(sessionId, studentId, ct);
+    return deleted.ToHttpResult();
+});
+
+app.MapGet("/api/course-sessions/{sessionId:Guid}/students", async (Guid sessionId, IRegistrationService service, CancellationToken ct) =>
+{
+    var regs = await service.GetRegistrationsBySessionIdAsync(sessionId, ct);
+    return regs.ToHttpResult();
+});
+
+app.MapGet("/api/students/{studentId:Guid}/course-sessions", async (Guid studentId, IRegistrationService service, CancellationToken ct) =>
+{
+    var regs = await service.GetRegistrationsByStudentIdAsync(studentId, ct);
+    return regs.ToHttpResult();
 });
 
 app.Run();
