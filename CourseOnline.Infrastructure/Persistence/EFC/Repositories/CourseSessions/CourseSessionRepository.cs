@@ -11,13 +11,13 @@ namespace CourseOnline.Infrastructure.Persistence.EFC.Repositories.CourseSession
 
 public class CourseSessionRepository(CourseOnlineDbContext context) : RepositoryBase<CourseSession, Guid, CourseSessionEntity, CourseOnlineDbContext>(context), ICourseSessionRepository
 {
-    public async Task<Result<CourseSession>> GetByCourseIdAsync(Guid courseId, CancellationToken ct)
+    public async Task<Result<IReadOnlyCollection<CourseSession>>> GetByCourseIdAsync(Guid courseId, CancellationToken ct)
     {
-        if (courseId == Guid.Empty) return Result<CourseSession>.BadRequest("Course Id is required");
+        if (courseId == Guid.Empty) return Result<IReadOnlyCollection<CourseSession>>.BadRequest("Course Id is required");
 
-        var entity = await Context.CourseSessions.AsNoTracking().SingleOrDefaultAsync(x => x.CourseId == courseId, ct);
+        var entities = await Context.CourseSessions.AsNoTracking().Where(x => x.CourseId == courseId).ToListAsync(ct);
 
-        return entity is null ? Result<CourseSession>.BadRequest("Course session not found") : Result<CourseSession>.Ok(ToModel(entity));
+        return entities.Count == 0 ? Result<IReadOnlyCollection<CourseSession>>.NotFound("No sessions found for this course.") : Result<IReadOnlyCollection<CourseSession>>.Ok([.. entities.Select(ToModel)]);
     }
 
     protected override CourseSessionEntity ToEntity(CourseSession model) => new()
