@@ -11,4 +11,6 @@ public class StudentEntity : AuditableEntity
     public Guid? ProgramId { get; set; }
     public ICollection<StudentCourseEntity> StudentCourses { get; set; } = [];
     public string? ImageUrl { get; set; }
+
+    public ICollection<CourseSessionStudentEntity> CourseSessionStudents { get; set; } = [];
 }
