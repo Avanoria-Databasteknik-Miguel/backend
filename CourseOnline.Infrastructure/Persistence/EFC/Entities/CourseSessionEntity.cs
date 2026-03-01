@@ -10,4 +10,5 @@ public class CourseSessionEntity : AuditableEntity
     public int ClassroomId { get; set; }
     public DateTime StartDateTimeUtc { get; set; }
     public DateTime EndDateTimeUtc { get; set; }
+    public ICollection<CourseSessionStudentEntity> CourseSessionStudents { get; set; } = [];
 }

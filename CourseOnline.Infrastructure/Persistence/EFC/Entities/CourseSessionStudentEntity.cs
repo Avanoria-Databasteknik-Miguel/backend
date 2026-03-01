@@ -3,7 +3,7 @@ public class CourseSessionStudentEntity
 {
     public StudentEntity Student { get; set; } = null!;
     public Guid StudentId { get; set; }
-    public CourseSessionEntity CourseSession = null!;
+    public CourseSessionEntity CourseSession { get; set; } = null!;
     public Guid CourseSessionId { get; set; }
 
 }
