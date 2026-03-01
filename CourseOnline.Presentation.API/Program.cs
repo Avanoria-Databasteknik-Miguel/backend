@@ -1,10 +1,14 @@
+using CourseOnline.Application.Classrooms.DTOs;
+using CourseOnline.Application.Contracts.Classrooms;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
+using CourseOnline.Application.Contracts.Floors;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Courses.DTOs.Inputs;
 using CourseOnline.Application.CourseSessions.DTOs.Inputs;
+using CourseOnline.Application.Floors.DTOs;
 using CourseOnline.Application.Programs.DTOs.Inputs;
 using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
@@ -292,6 +296,85 @@ app.MapDelete("/api/course-sessions/{id:Guid}", async (
 {
     var deleted = await service.DeleteCourseSessionAsync(new DeleteCourseSessionInput(id), ct);
 
+    return deleted.ToHttpResult();
+});
+
+// ##### CLASSROOMS #####
+
+app.MapPost("/api/classrooms", async (CreateClassroomInput input, IClassroomService service, CancellationToken ct) =>
+{
+    var created = await service.CreateClassroomAsync(input, ct);
+
+    return created.Success
+        ? Results.Created($"/api/classrooms/{created.Value!.Id}", created.Value)
+        : created.ToHttpResult();
+});
+
+app.MapGet("/api/classrooms", async (IClassroomService service, CancellationToken ct) =>
+{
+    var classrooms = await service.GetAllClassroomsAsync(ct);
+    return classrooms.ToHttpResult();
+});
+
+app.MapGet("/api/classrooms/{id:int}", async (int id, IClassroomService service, CancellationToken ct) =>
+{
+    var classroom = await service.GetClassroomByIdAsync(id, ct);
+    return classroom.ToHttpResult();
+});
+
+app.MapPut("/api/classrooms/{id:int}", async (int id, UpdateClassroomInput input, IClassroomService service, CancellationToken ct) =>
+{
+    var cmd = input with { Id = id };
+    var updated = await service.UpdateClassroomAsync(cmd, ct);
+    return updated.ToHttpResult();
+});
+
+app.MapDelete("/api/classrooms/{id:int}", async (int id, IClassroomService service, CancellationToken ct) =>
+{
+    var deleted = await service.DeleteClassroomAsync(new DeleteClassroomInput(id), ct);
+    return deleted.ToHttpResult();
+});
+
+
+// ##### FLOORS #####
+
+app.MapPost("/api/floors", async (CreateFloorInput input, IFloorService service, CancellationToken ct) =>
+{
+    var created = await service.CreateFloorAsync(input, ct);
+
+    return created.Success
+        ? Results.Created($"/api/floors/{created.Value!.Id}", created.Value)
+        : created.ToHttpResult();
+});
+
+app.MapGet("/api/floors", async (IFloorService service, CancellationToken ct) =>
+{
+    var floors = await service.GetAllFloorsAsync(ct);
+    return floors.ToHttpResult();
+});
+
+app.MapGet("/api/floors/{id:int}", async (int id, IFloorService service, CancellationToken ct) =>
+{
+    var floor = await service.GetFloorByIdAsync(id, ct);
+    return floor.ToHttpResult();
+});
+
+app.MapGet("/api/floors/by-level/{level}", async (string level, IFloorService service, CancellationToken ct) =>
+{
+    var floor = await service.GetFloorByLevelAsync(level, ct);
+    return floor.ToHttpResult();
+});
+
+app.MapPut("/api/floors/{id:int}", async (int id, UpdateFloorInput input, IFloorService service, CancellationToken ct) =>
+{
+    var cmd = input with { Id = id };
+    var updated = await service.UpdateFloorAsync(cmd, ct);
+    return updated.ToHttpResult();
+});
+
+app.MapDelete("/api/floors/{id:int}", async (int id, IFloorService service, CancellationToken ct) =>
+{
+    var deleted = await service.DeleteFloorAsync(id, ct);
     return deleted.ToHttpResult();
 });
 
