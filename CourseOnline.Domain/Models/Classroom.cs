@@ -11,7 +11,7 @@ public sealed class Classroom
 
     public Classroom(int id, string name, int seats, int floorId)
     {
-        if (id <= 0) throw new DomainValidationException("Id is required");
+        if (id < 0) throw new DomainValidationException("Id is required");
         if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Classroom name is required");
         if (seats <= 0) throw new DomainValidationException("Seats must be greater than 0");
         if (floorId <= 0) throw new DomainValidationException("FloorId is required");
