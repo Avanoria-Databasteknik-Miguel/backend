@@ -17,7 +17,9 @@ public class CourseSessionRepository(CourseOnlineDbContext context) : Repository
 
         var entities = await Context.CourseSessions.AsNoTracking().Where(x => x.CourseId == courseId).ToListAsync(ct);
 
-        return entities.Count == 0 ? Result<IReadOnlyCollection<CourseSession>>.NotFound("No sessions found for this course.") : Result<IReadOnlyCollection<CourseSession>>.Ok([.. entities.Select(ToModel)]);
+        var models = entities.Select(ToModel).ToList();
+
+        return Result<IReadOnlyCollection<CourseSession>>.Ok(models);
     }
 
     protected override CourseSessionEntity ToEntity(CourseSession model) => new()
