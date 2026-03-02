@@ -3,4 +3,5 @@
   <Project Path="CourseOnline.Domain/CourseOnline.Domain.csproj" />
   <Project Path="CourseOnline.Infrastructure/CourseOnline.Infrastructure.csproj" />
   <Project Path="CourseOnline.Presentation.API/CourseOnline.Presentation.API.csproj" />
+  <Project Path="CourseOnline.Tests/CourseOnline.Tests.csproj" Id="ca49840e-1d13-47b4-97a1-805c60ba2616" />
 </Solution>

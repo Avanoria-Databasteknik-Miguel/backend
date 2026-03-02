@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Programs\DTOs\Outputs\" />
     <Folder Include="Registrations\DTOs\Inputs\" />
     <Folder Include="Reports\Services\" />
     <Folder Include="StudentCourses\DTOs\Outputs\" />
