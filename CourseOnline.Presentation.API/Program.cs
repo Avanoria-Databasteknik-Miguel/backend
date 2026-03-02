@@ -1,4 +1,6 @@
+using CourseOnline.Application.Categories.DTOs;
 using CourseOnline.Application.Classrooms.DTOs;
+using CourseOnline.Application.Contracts.Categories;
 using CourseOnline.Application.Contracts.Classrooms;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
@@ -407,6 +409,59 @@ app.MapGet("/api/students/{studentId:Guid}/course-sessions", async (Guid student
 {
     var regs = await service.GetRegistrationsByStudentIdAsync(studentId, ct);
     return regs.ToHttpResult();
+});
+
+// ##### CATEGORIES #####
+
+app.MapPost("/api/categories", async (
+    CreateCategoryInput input,
+    ICategoryService service,
+    CancellationToken ct) =>
+{
+    var created = await service.CreateCategoryAsync(input, ct);
+
+    return created.Success
+        ? Results.Created($"/api/categories/{created.Value!.Id}", created.Value)
+        : created.ToHttpResult();
+});
+
+app.MapGet("/api/categories", async (
+    ICategoryService service,
+    CancellationToken ct) =>
+{
+    var cats = await service.GetAllCategoriesAsync(ct);
+    return cats.ToHttpResult();
+});
+
+app.MapGet("/api/categories/{id:Guid}", async (
+    Guid id,
+    ICategoryService service,
+    CancellationToken ct) =>
+{
+    var cat = await service.GetCategoryByIdAsync(id, ct);
+    return cat.ToHttpResult();
+});
+
+app.MapPut("/api/categories/{id:Guid}", async (
+    Guid id,
+    UpdateCategoryInput input,
+    ICategoryService service,
+    CancellationToken ct) =>
+{
+    // antar att UpdateCategoryInput är en record med Id som går att sätta via "with"
+    var cmd = input with { Id = id };
+
+    var updated = await service.UpdateCategoryAsync(cmd, ct);
+    return updated.ToHttpResult();
+});
+
+app.MapDelete("/api/categories/{id:Guid}", async (
+    Guid id,
+    ICategoryService service,
+    CancellationToken ct) =>
+{
+    var deleted = await service.DeleteCategoryAsync(new DeleteCategoryInput(id), ct);
+    return deleted.ToHttpResult();
 });
 
 app.Run();
