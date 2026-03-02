@@ -1,4 +1,5 @@
-﻿using CourseOnline.Application.Common.Results;
+﻿using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Registrations;
 using CourseOnline.Application.CourseSessions.Interfaces;
 using CourseOnline.Application.Registrations.Interfaces;
@@ -7,7 +8,7 @@ using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class RegistrationService(IRegistrationRepository registrationRepo, IStudentRepository studentRepo, ICourseSessionRepository courseSessionRepo) : IRegistrationService
+public sealed class RegistrationService(IRegistrationRepository registrationRepo, IStudentRepository studentRepo, ICourseSessionRepository courseSessionRepo, IUnitOfWork uow) : IRegistrationService
 {
     public async Task<Result<int>> CountRegistrationsBySessionIdAsync(Guid courseSessionId, CancellationToken ct)
     {
@@ -24,7 +25,6 @@ public sealed class RegistrationService(IRegistrationRepository registrationRepo
     {
         if (courseSessionId == Guid.Empty) return Result<IReadOnlyCollection<CourseSessionStudent>>.BadRequest("CourseSessionId is required.");
 
-        // valfritt men bra: bekräfta att session finns
         var session = await courseSessionRepo.GetByIdAsync(courseSessionId, ct);
         if (session is null) return Result<IReadOnlyCollection<CourseSessionStudent>>.NotFound("Course session not found.");
 
@@ -62,6 +62,8 @@ public sealed class RegistrationService(IRegistrationRepository registrationRepo
 
         var created = await registrationRepo.AddAsync(registration, ct);
 
+        await uow.SaveChangesAsync(ct);
+
         return Result<CourseSessionStudent>.Ok(created);
     }
 
@@ -74,6 +76,10 @@ public sealed class RegistrationService(IRegistrationRepository registrationRepo
         if (!exists) return Result.NotFound("Registration not found.");
 
         var removed = await registrationRepo.RemoveAsync(studentId, courseSessionId, ct);
-        return removed ? Result.Ok() : Result.Conflict("Something went wrong.");
+        if(!removed) return Result.Conflict("Something went wrong.");
+
+        await uow.SaveChangesAsync(ct);
+
+        return Result.Ok();
     }
 }

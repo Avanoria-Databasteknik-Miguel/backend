@@ -1,14 +1,15 @@
-﻿using CourseOnline.Application.Common.Results;
+﻿using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Factories;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Domain.Models;
-using System.Diagnostics.CodeAnalysis;
+
 
 namespace CourseOnline.Application.Services;
 
-public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherService
+public sealed class TeacherService(ITeacherRepository teacherRepo, IUnitOfWork uow) : ITeacherService
 {
     public async Task<Result<Teacher>> CreateTeacherAsync(CreateTeacherInput input, CancellationToken ct)
     {
@@ -25,7 +26,7 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
         var teacherCreated = await teacherRepo.AddASync(teacher, ct);
 
 
-        //if (teacherCreated is null) return Result<Teacher>.Conflict("Something wrong happened");
+        await uow.SaveChangesAsync(ct);
 
         //TODO: cache stuff.
 
@@ -38,13 +39,15 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
 
         var teacherToDelete = await teacherRepo.GetByIdAsync(id, ct);
 
-        if (teacherToDelete is null) return Result.BadRequest("Teacher id doesn't exist, can't delete teacher.");
+        if (teacherToDelete is null) return Result.NotFound("Teacher id doesn't exist, can't delete teacher.");
         
         var deleted = await teacherRepo.RemoveAsync(teacherToDelete.Id, ct);
 
-        if (!deleted) return Result.BadRequest("Something went wrong");
+        if (!deleted) return Result.Conflict("Something went wrong");
 
         //Todo: Cache stuff;
+
+        await uow.SaveChangesAsync(ct);
 
         return Result.Ok();
 
@@ -80,17 +83,18 @@ public sealed class TeacherService(ITeacherRepository teacherRepo) : ITeacherSer
         if (input.Id == Guid.Empty) return Result<Teacher>.BadRequest("Id required");
 
         var teacherToUpdate = await teacherRepo.GetByIdAsync(input.Id, ct);
-        if (teacherToUpdate is null) return Result<Teacher>.BadRequest("Teacher not found");
+        if (teacherToUpdate is null) return Result<Teacher>.NotFound("Teacher not found");
 
 
         teacherToUpdate.Update(input.FirstName, input.LastName, input.ImageUrl);
         teacherToUpdate.SetEmail(input.Email); // only if email is allowed to change
 
         var updatedTeacher = await teacherRepo.UpdateAsync(input.Id, teacherToUpdate, ct);
+        if (updatedTeacher is null) return Result<Teacher>.Conflict("Something wrong happened");
 
+        await uow.SaveChangesAsync(ct);
 
-
-        return updatedTeacher is null ? Result<Teacher>.Conflict("Something wrong happened") : Result<Teacher>.Ok(updatedTeacher);
+        return Result<Teacher>.Ok(updatedTeacher);
 
 
     }
