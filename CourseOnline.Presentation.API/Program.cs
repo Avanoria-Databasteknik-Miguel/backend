@@ -15,6 +15,7 @@ using CourseOnline.Application.Courses.DTOs.Inputs;
 using CourseOnline.Application.CourseSessions.DTOs.Inputs;
 using CourseOnline.Application.Floors.DTOs;
 using CourseOnline.Application.Programs.DTOs.Inputs;
+using CourseOnline.Application.Reports.Interfaces;
 using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Infrastructure.Extensions;
@@ -551,5 +552,24 @@ app.MapGet("/api/courses/{courseId:Guid}/students", async (
     return students.ToHttpResult();
 });
 
+
+// ##### REPORTS #####
+
+app.MapGet("/api/reports/session-availability", async (
+    IReportService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetSessionAvailabilityAsync(ct);
+    return Results.Ok(result);
+});
+
+
+app.MapGet("/api/reports/students/upcoming-sessions", async (
+    IReportService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetStudentWithUpcomingSessionsAsync(ct);
+    return Results.Ok(result);
+});
 
 app.Run();
