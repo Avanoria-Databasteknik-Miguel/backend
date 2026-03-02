@@ -13,6 +13,7 @@
   <ItemGroup>
     <Folder Include="Programs\DTOs\Outputs\" />
     <Folder Include="Registrations\DTOs\Inputs\" />
+    <Folder Include="StudentCourses\DTOs\Outputs\" />
     <Folder Include="Teachers\DTOs\Outputs\" />
   </ItemGroup>
 

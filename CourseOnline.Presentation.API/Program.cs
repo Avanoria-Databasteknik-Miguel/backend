@@ -8,6 +8,7 @@ using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Contracts.Floors;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Registrations;
+using CourseOnline.Application.Contracts.StudentCourses;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.Courses.DTOs.Inputs;
@@ -509,6 +510,46 @@ app.MapGet("/api/categories/{categoryId:Guid}/courses", async (
     return result.ToHttpResult();
 });
 
+// ##### STUDENT-COURSES #####
+
+app.MapPost("/api/students/{studentId:Guid}/courses/{courseId:Guid}", async (
+    Guid studentId,
+    Guid courseId,
+    IStudentCourseService service,
+    CancellationToken ct) =>
+{
+    var created = await service.AddStudentToCourseAsync(studentId, courseId, ct);
+    return created.ToHttpResult();
+});
+
+app.MapDelete("/api/students/{studentId:Guid}/courses/{courseId:Guid}", async (
+    Guid studentId,
+    Guid courseId,
+    IStudentCourseService service,
+    CancellationToken ct) =>
+{
+    var deleted = await service.RemoveStudentFromCourseAsync(studentId, courseId, ct);
+    return deleted.ToHttpResult();
+});
+
+app.MapGet("/api/students/{studentId:Guid}/courses", async (
+    Guid studentId,
+    IStudentCourseService service,
+    CancellationToken ct) =>
+{
+    var courses = await service.GetCoursesByStudentIdAsync(studentId, ct);
+    return courses.ToHttpResult();
+});
+
+
+app.MapGet("/api/courses/{courseId:Guid}/students", async (
+    Guid courseId,
+    IStudentCourseService service,
+    CancellationToken ct) =>
+{
+    var students = await service.GetStudentsByCourseIdAsync(courseId, ct);
+    return students.ToHttpResult();
+});
 
 
 app.Run();

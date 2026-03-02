@@ -9,6 +9,7 @@ using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Contracts.Floors;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Contracts.Registrations;
+using CourseOnline.Application.Contracts.StudentCourses;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Contracts.Teachers;
 using CourseOnline.Application.CourseCategories.Interfaces;
@@ -18,6 +19,7 @@ using CourseOnline.Application.Floors.Interfaces;
 using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Application.Registrations.Interfaces;
 using CourseOnline.Application.Services;
+using CourseOnline.Application.StudentCourses.Interfaces;
 using CourseOnline.Application.Students.Interfaces;
 using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Infrastructure.Persistence.Contexts;
@@ -29,6 +31,7 @@ using CourseOnline.Infrastructure.Persistence.EFC.Repositories.CourseSessions;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.CourseSessionStudents;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Floors;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Programs;
+using CourseOnline.Infrastructure.Persistence.EFC.Repositories.StudentCourses;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Students;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
 using CourseOnline.Infrastructure.Persistence.EFC.UnitOfWork;
@@ -77,6 +80,8 @@ public static class InfrastructureServiceRegistrationExtensions
         services.AddScoped<ICourseCategoryRepository, CourseCategoryRepository>();
         services.AddScoped<ICourseCategoryService, CourseCategoryService>();
 
+        services.AddScoped<IStudentCourseRepository, StudentCourseRepository>();
+        services.AddScoped<IStudentCourseService, StudentCourseService>(); 
 
         services.AddScoped<IUnitOfWork, EfcUnitOfWork>();
 
