@@ -1,4 +1,4 @@
-﻿using CourseOnline.Application.Categories.DTOs;
+﻿using CourseOnline.Application.Categories.DTOs.Inputs;
 using CourseOnline.Application.Common.Results;
 using CourseOnline.Domain.Models;
 

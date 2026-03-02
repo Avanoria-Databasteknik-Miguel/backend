@@ -9,6 +9,11 @@ namespace CourseOnline.Infrastructure.Persistence.EFC.Repositories.Categories;
 
 public sealed class CategoryRepository(CourseOnlineDbContext context) : RepositoryBase<Category, Guid, CategoryEntity, CourseOnlineDbContext>(context), ICategoryRepository
 {
+    public async Task<bool> ExistsByNameAsync(string name, CancellationToken ct)
+    {
+        return await Context.Categories.AsNoTracking().AnyAsync(c => c.Name == name, ct);
+    }
+
     public async Task<Category?> GetByNameAsync(string name, CancellationToken ct)
     {
         var entity = await Context.Categories.AsNoTracking().SingleOrDefaultAsync(c => c.Name == name, ct);

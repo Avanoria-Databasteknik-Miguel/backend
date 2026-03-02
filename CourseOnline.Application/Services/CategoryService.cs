@@ -1,4 +1,4 @@
-﻿using CourseOnline.Application.Categories.DTOs;
+﻿using CourseOnline.Application.Categories.DTOs.Inputs;
 using CourseOnline.Application.Categories.Interfaces;
 using CourseOnline.Application.Common.Interfaces;
 using CourseOnline.Application.Common.Results;
@@ -16,17 +16,15 @@ public class CategoryService(ICategoryRepository categoryRepo, IUnitOfWork uow) 
 
         var normalizedName = input.Name.Trim().ToLower();
 
-        var existing = await categoryRepo.GetByNameAsync(normalizedName, ct);
-        if (existing is not null)
+        if (await categoryRepo.ExistsByNameAsync(normalizedName, ct))
             return Result<Category>.Conflict("Category already exists.");
 
         var category = new Category(Guid.NewGuid(), normalizedName);
 
-        var created = await categoryRepo.AddASync(category, ct);
-
+        await categoryRepo.AddASync(category, ct);
         await uow.SaveChangesAsync(ct);
 
-        return Result<Category>.Ok(created);
+        return Result<Category>.Ok(category);
     }
 
     public async Task<Result> DeleteCategoryAsync(DeleteCategoryInput input, CancellationToken ct)
