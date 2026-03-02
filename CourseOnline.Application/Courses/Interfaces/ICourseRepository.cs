@@ -5,4 +5,5 @@ namespace CourseOnline.Application.Courses.Interfaces;
 public interface ICourseRepository : IRepositoryBase<Course, Guid>
 {
     Task<Course?> GetByNameAsync(string name, CancellationToken ct);
+    Task<Course?> GetWithCategoriesByIdAsync(Guid id, CancellationToken ct);
 }

@@ -6,4 +6,5 @@ namespace CourseOnline.Application.Categories.Interfaces;
 public interface ICategoryRepository : IRepositoryBase<Category, Guid>
 {
     Task<Category?> GetByNameAsync(string name, CancellationToken ct);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken ct);
 }

@@ -14,6 +14,16 @@ public class CourseRepository(CourseOnlineDbContext context) : RepositoryBase<Co
         return entity is null ? null : ToModel(entity);
     }
 
+    public async Task<Course?> GetWithCategoriesByIdAsync(Guid id, CancellationToken ct)
+    {
+        var entity = await Context.Courses.AsNoTracking().Include(c => c.CourseCategories).ThenInclude(cc => cc.Category).SingleOrDefaultAsync(c => c.Id == id, ct);
+
+        if (entity is null)
+            return null;
+
+        return ToModel(entity);
+    }
+
     protected override CourseEntity ToEntity(Course model)
     {
         return new CourseEntity()
