@@ -19,6 +19,7 @@ using CourseOnline.Application.Reports.Interfaces;
 using CourseOnline.Application.Students.DTOs;
 using CourseOnline.Application.Teachers.DTOs.Inputs;
 using CourseOnline.Infrastructure.Extensions;
+using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Presentation.API.Common;
 using CourseOnline.Presentation.API.Models.Courses;
 using CourseOnline.Presentation.API.Models.Programs;
@@ -33,10 +34,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddCors();
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<CourseOnlineDbContext>();
+    db.Database.EnsureCreated();
+}
 
 app.MapOpenApi();
 
