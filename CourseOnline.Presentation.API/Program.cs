@@ -1,7 +1,8 @@
-using CourseOnline.Application.Categories.DTOs;
+using CourseOnline.Application.Categories.DTOs.Inputs;
 using CourseOnline.Application.Classrooms.DTOs;
 using CourseOnline.Application.Contracts.Categories;
 using CourseOnline.Application.Contracts.Classrooms;
+using CourseOnline.Application.Contracts.CourseCategories;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Contracts.Floors;
@@ -463,5 +464,51 @@ app.MapDelete("/api/categories/{id:Guid}", async (
     var deleted = await service.DeleteCategoryAsync(new DeleteCategoryInput(id), ct);
     return deleted.ToHttpResult();
 });
+
+
+
+
+// ##### COURSE-CATEGORIES #####
+
+app.MapPost("/api/courses/{courseId:Guid}/categories/{categoryId:Guid}", async (
+    Guid courseId,
+    Guid categoryId,
+    ICourseCategoryService service,
+    CancellationToken ct) =>
+{
+    var result = await service.AddCategoryToCourseAsync(courseId, categoryId, ct);
+    return result.ToHttpResult();
+});
+
+app.MapDelete("/api/courses/{courseId:Guid}/categories/{categoryId:Guid}", async (
+    Guid courseId,
+    Guid categoryId,
+    ICourseCategoryService service,
+    CancellationToken ct) =>
+{
+    var result = await service.RemoveCategoryFromCourseAsync(courseId, categoryId, ct);
+    return result.ToHttpResult();
+});
+
+app.MapGet("/api/courses/{courseId:Guid}/categories", async (
+    Guid courseId,
+    ICourseCategoryService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetCategoriesByCourseIdAsync(courseId, ct);
+    return result.ToHttpResult();
+});
+
+// (valfritt) GET /api/categories/{categoryId}/courses
+app.MapGet("/api/categories/{categoryId:Guid}/courses", async (
+    Guid categoryId,
+    ICourseCategoryService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetCoursesByCategoryIdAsync(categoryId, ct);
+    return result.ToHttpResult();
+});
+
+
 
 app.Run();
