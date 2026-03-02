@@ -19,7 +19,7 @@ public class RegistrationRepository(CourseOnlineDbContext context): IRegistratio
         };
 
         await _context.CourseSessionStudents.AddAsync(entity, ct);
-        await _context.SaveChangesAsync(ct);
+
 
         return registration;
     }
@@ -71,7 +71,7 @@ public class RegistrationRepository(CourseOnlineDbContext context): IRegistratio
             return false;
 
         _context.CourseSessionStudents.Remove(entity);
-        await _context.SaveChangesAsync(ct);
+
 
         return true;
     }
