@@ -9,13 +9,7 @@ public class TeacherEntityConfigurations : IEntityTypeConfiguration<TeacherEntit
 {
     public void Configure(EntityTypeBuilder<TeacherEntity> builder)
     {
-        builder.ToTable("Teachers", t =>
-        {
-            t.HasCheckConstraint(
-                "CK_Teachers_Email_NotEmpty",
-                "LEN(LTRIM(RTRIM([Email]))) > 0"
-            );
-        });
+        builder.ToTable("Teachers");
 
         builder.HasKey(x => x.Id);
 
