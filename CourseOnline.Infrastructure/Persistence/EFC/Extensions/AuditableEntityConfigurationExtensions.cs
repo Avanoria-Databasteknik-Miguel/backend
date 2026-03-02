@@ -11,16 +11,16 @@ public static class AuditableEntityConfigurationExtensions
     {
         builder.Property(x => x.RowVersion)
             .IsRowVersion()
-            .IsRequired();
+            .IsRequired(false); // om du kör SQLite dev
 
         builder.Property(x => x.CreatedAtUtc)
             .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAdd();
+            .IsRequired()
+            .ValueGeneratedNever(); // <-- viktigt
 
         builder.Property(x => x.ModifiedAtUtc)
             .HasPrecision(0)
-            .HasDefaultValueSql("SYSUTCDATETIME()")
-            .ValueGeneratedOnAddOrUpdate();
+            .IsRequired()
+            .ValueGeneratedNever(); // <-- viktigt
     }
 }
