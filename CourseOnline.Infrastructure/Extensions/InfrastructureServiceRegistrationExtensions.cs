@@ -1,4 +1,7 @@
-﻿using CourseOnline.Application.Classrooms.Interfaces;
+﻿using CourseOnline.Application.Categories.Interfaces;
+using CourseOnline.Application.Classrooms.Interfaces;
+using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Contracts.Categories;
 using CourseOnline.Application.Contracts.Classrooms;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Contracts.CourseSessions;
@@ -16,6 +19,7 @@ using CourseOnline.Application.Services;
 using CourseOnline.Application.Students.Interfaces;
 using CourseOnline.Application.Teachers.Interfaces;
 using CourseOnline.Infrastructure.Persistence.Contexts;
+using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Categories;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Classrooms;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Courses;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.CourseSessions;
@@ -24,6 +28,7 @@ using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Floors;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Programs;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Students;
 using CourseOnline.Infrastructure.Persistence.EFC.Repositories.Teachers;
+using CourseOnline.Infrastructure.Persistence.EFC.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +67,14 @@ public static class InfrastructureServiceRegistrationExtensions
 
         services.AddScoped<IRegistrationRepository, RegistrationRepository>();
         services.AddScoped<IRegistrationService, RegistrationService>();
+
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ICategoryService, CategoryService>();
+
+
+        services.AddScoped<IUnitOfWork, EfcUnitOfWork>();
+
+        
 
         return services;
     }
