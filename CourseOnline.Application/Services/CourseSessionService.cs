@@ -1,4 +1,5 @@
 ﻿using CourseOnline.Application.Classrooms.Interfaces;
+using CourseOnline.Application.Common.Interfaces;
 using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.CourseSessions;
 using CourseOnline.Application.Courses.Interfaces;
@@ -10,7 +11,7 @@ using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class CourseSessionService(ICourseSessionRepository courseSessionRepo, ICourseRepository courseRepo, IClassroomsRepository classroomRepo) : ICourseSessionService
+public sealed class CourseSessionService(ICourseSessionRepository courseSessionRepo, ICourseRepository courseRepo, IClassroomsRepository classroomRepo, IUnitOfWork uow) : ICourseSessionService
 {
     public async Task<Result<CourseSession>> CreateCourseSessionAsync(CreateCourseSessionInput input, CancellationToken ct)
     {
@@ -27,6 +28,9 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
         var session = CourseSessionFactory.Create(input);
 
         var created = await courseSessionRepo.AddASync(session, ct);
+
+        await uow.SaveChangesAsync(ct);
+
         return Result<CourseSession>.Ok(created);
     }
 
@@ -53,9 +57,11 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
         );
 
         var updated = await courseSessionRepo.UpdateAsync(input.Id, existing, ct);
-        return updated is null
-            ? Result<CourseSession>.Conflict("Something went wrong.")
-            : Result<CourseSession>.Ok(updated);
+        if(updated is null) return Result<CourseSession>.Conflict("Something went wrong.");
+
+        await uow.SaveChangesAsync(ct);
+
+        return Result<CourseSession>.Ok(updated);
     }
 
     public async Task<Result> DeleteCourseSessionAsync(DeleteCourseSessionInput input, CancellationToken ct)
@@ -66,7 +72,11 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
         if (existing is null) return Result.NotFound("Course session not found.");
 
         var deleted = await courseSessionRepo.RemoveAsync(existing.Id, ct);
-        return deleted ? Result.Ok() : Result.Conflict("Something went wrong.");
+        if (!deleted) return Result.Conflict("Something went wrong.");
+
+        await uow.SaveChangesAsync(ct);
+
+        return Result.Ok();
     }
 
     public async Task<Result<CourseSession>> GetCourseSessionByIdAsync(Guid id, CancellationToken ct)
@@ -104,7 +114,7 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
         var sessions = sessionsResult.Value ?? [];
 
         // 3) Mappa till “expanded output”
-        IReadOnlyCollection<CourseSessionWithCourseOutput> output = sessions
+        IReadOnlyCollection<CourseSessionWithCourseOutput> output = [.. sessions
             .Select(s => new CourseSessionWithCourseOutput(
                 s.Id,
                 s.CourseId,
@@ -112,11 +122,8 @@ public sealed class CourseSessionService(ICourseSessionRepository courseSessionR
                 s.StartDateTimeUtc,
                 s.EndDateTimeUtc,
                 course
-            ))
-            .ToList();
+            ))];
 
         return Result<IReadOnlyCollection<CourseSessionWithCourseOutput>>.Ok(output);
     }
-
-
 }

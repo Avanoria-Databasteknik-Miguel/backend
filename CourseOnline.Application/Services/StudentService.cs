@@ -1,4 +1,5 @@
-﻿using CourseOnline.Application.Common.Results;
+﻿using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Students;
 using CourseOnline.Application.Factories;
 using CourseOnline.Application.Students.DTOs;
@@ -7,7 +8,7 @@ using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class StudentService(IStudentRepository studentRepo) : IStudentService
+public sealed class StudentService(IStudentRepository studentRepo, IUnitOfWork uow) : IStudentService
 {
     public async Task<Result<Student>> CreateStudentAsync(CreateStudentInput input, CancellationToken ct)
     {
@@ -23,6 +24,8 @@ public sealed class StudentService(IStudentRepository studentRepo) : IStudentSer
 
         var createdStudent = await studentRepo.AddASync(student, ct);
 
+        await uow.SaveChangesAsync(ct);
+
         return Result<Student>.Ok(createdStudent);
     }
 
@@ -35,6 +38,8 @@ public sealed class StudentService(IStudentRepository studentRepo) : IStudentSer
         var deleted = await studentRepo.RemoveAsync(studentToDelete.Id, ct);
 
         if (!deleted) return Result.Conflict("Something went wrong");
+
+        await uow.SaveChangesAsync(ct);
         return Result.Ok();
 
     }
@@ -67,9 +72,11 @@ public sealed class StudentService(IStudentRepository studentRepo) : IStudentSer
         studentToUpdate.SetEmail(input.Email); // only if email is allowed to change
 
         var updatedStudent = await studentRepo.UpdateAsync(input.Id, studentToUpdate, ct);
+        if (updatedStudent is null) return Result<Student>.Conflict("Something wrong happened");
+
+        await uow.SaveChangesAsync(ct);
 
 
-
-        return updatedStudent is null ? Result<Student>.Conflict("Something wrong happened") : Result<Student>.Ok(updatedStudent);
+        return Result<Student>.Ok(updatedStudent);
     }
 }

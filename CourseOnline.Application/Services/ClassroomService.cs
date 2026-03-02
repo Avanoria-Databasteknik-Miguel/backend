@@ -1,5 +1,6 @@
 ﻿using CourseOnline.Application.Classrooms.DTOs;
 using CourseOnline.Application.Classrooms.Interfaces;
+using CourseOnline.Application.Common.Interfaces;
 using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Classrooms;
 using CourseOnline.Application.Floors.Interfaces;
@@ -7,7 +8,7 @@ using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloorRepository floorRepo) : IClassroomService
+public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloorRepository floorRepo, IUnitOfWork uow) : IClassroomService
 {
     public async Task<Result<Classroom>> CreateClassroomAsync(CreateClassroomInput input, CancellationToken ct)
     {
@@ -24,7 +25,7 @@ public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloor
         if (floor is null)
             return Result<Classroom>.NotFound("Floor not found.");
 
-        // OBS: kräver att Domain tillåter id=0 vid create
+
         var classroom = new Classroom(
             id: 0,
             name: input.Name,
@@ -33,6 +34,9 @@ public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloor
         );
 
         var created = await classroomRepo.AddASync(classroom, ct);
+
+        await uow.SaveChangesAsync(ct);
+
         return Result<Classroom>.Ok(created);
     }
 
@@ -61,10 +65,11 @@ public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloor
         existing.Update(input.Name, input.Seats, input.FloorId);
 
         var updated = await classroomRepo.UpdateAsync(input.Id, existing, ct);
+        if (updated is null) return Result<Classroom>.Conflict("Something went wrong.");
 
-        return updated is null
-            ? Result<Classroom>.Conflict("Something went wrong.")
-            : Result<Classroom>.Ok(updated);
+        await uow.SaveChangesAsync(ct);
+
+        return Result<Classroom>.Ok(updated);
     }
 
     public async Task<Result> DeleteClassroomAsync(DeleteClassroomInput input, CancellationToken ct)
@@ -77,10 +82,12 @@ public sealed class ClassroomService(IClassroomsRepository classroomRepo, IFloor
             return Result.NotFound("Classroom not found.");
 
         var deleted = await classroomRepo.RemoveAsync(existing.Id, ct);
+        if (!deleted) return Result.Conflict("Something went wrong.");
 
-        return deleted
-            ? Result.Ok()
-            : Result.Conflict("Something went wrong.");
+        await uow.SaveChangesAsync(ct);
+
+        return Result.Ok();
+   
     }
 
     public async Task<Result<Classroom>> GetClassroomByIdAsync(int id, CancellationToken ct)

@@ -1,15 +1,14 @@
-﻿using CourseOnline.Application.Common.Results;
+﻿using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Courses;
 using CourseOnline.Application.Courses.DTOs.Inputs;
 using CourseOnline.Application.Courses.Interfaces;
 using CourseOnline.Application.Factories;
 using CourseOnline.Domain.Models;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class CourseService(ICourseRepository courseRepo) : ICourseService
+public sealed class CourseService(ICourseRepository courseRepo, IUnitOfWork uow) : ICourseService
 {
     public async Task<Result<Course>> CreateCourseAsync(CreateCourseInput input, CancellationToken ct)
     {
@@ -26,6 +25,8 @@ public sealed class CourseService(ICourseRepository courseRepo) : ICourseService
 
         var createdCourse = await courseRepo.AddASync(course, ct);
 
+        await uow.SaveChangesAsync(ct);
+
         //TODO: cache stuff
 
         return Result<Course>.Ok(createdCourse);
@@ -36,12 +37,13 @@ public sealed class CourseService(ICourseRepository courseRepo) : ICourseService
         if (input.Id == Guid.Empty) return Result.BadRequest("Id is required.");
 
         var deleteCourse = await courseRepo.GetByIdAsync(input.Id, ct);
-
         if (deleteCourse is null) return Result.NotFound("Course not found");
 
         var deleted = await courseRepo.RemoveAsync(deleteCourse.Id, ct);
-
         if (!deleted) return Result.Conflict("Something went wrong");
+
+        await uow.SaveChangesAsync(ct);
+
 
         return Result.Ok();
     }
@@ -105,9 +107,10 @@ public sealed class CourseService(ICourseRepository courseRepo) : ICourseService
         );
 
         var updated = await courseRepo.UpdateAsync(input.Id, courseToUpdate, ct);
+        if (updated is null) return Result<Course>.Conflict("Something went wrong");
 
-        return updated is null
-            ? Result<Course>.Conflict("Something went wrong")
-            : Result<Course>.Ok(updated);
+        await uow.SaveChangesAsync(ct);
+
+        return Result<Course>.Ok(updated);
     }
 }

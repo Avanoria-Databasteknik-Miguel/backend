@@ -1,4 +1,5 @@
-﻿using CourseOnline.Application.Common.Results;
+﻿using CourseOnline.Application.Common.Interfaces;
+using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Factories;
 using CourseOnline.Application.Programs.DTOs.Inputs;
@@ -8,7 +9,7 @@ using CourseOnline.Domain.Models;
 
 namespace CourseOnline.Application.Services;
 
-public sealed class ProgramService(IProgramRepository programRepo) : IProgramService
+public sealed class ProgramService(IProgramRepository programRepo, IUnitOfWork uow) : IProgramService
 {
     public async Task<Result<Program>> CreateProgramAsync(CreateProgramInput input, CancellationToken ct)
     {
@@ -23,6 +24,8 @@ public sealed class ProgramService(IProgramRepository programRepo) : IProgramSer
         var program = ProgramFactory.Create(input);
 
         var createdProgram = await programRepo.AddASync(program, ct);
+
+        await uow.SaveChangesAsync(ct);
 
 
         //TODO: cache stuff
@@ -41,6 +44,8 @@ public sealed class ProgramService(IProgramRepository programRepo) : IProgramSer
         var deleted = await programRepo.RemoveAsync(deleteProgram.Id, ct);
 
         if (!deleted) return Result.Conflict("Something went wrong");
+
+        await uow.SaveChangesAsync(ct);
 
         return Result.Ok();
 
@@ -81,7 +86,8 @@ public sealed class ProgramService(IProgramRepository programRepo) : IProgramSer
         programToUpdate.Update(input.Name, input.DurationWeeks, input.MaxStudents);
 
         var updatedProgram = await programRepo.UpdateAsync(input.Id, programToUpdate, ct);
+        if (updatedProgram is null) return Result<Program>.Conflict("Something went wrong");
 
-        return updatedProgram is null ? Result<Program>.Conflict("Something went wrong") : Result<Program>.Ok(updatedProgram);
+        return Result<Program>.Ok(updatedProgram);
     }
 }

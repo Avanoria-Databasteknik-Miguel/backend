@@ -18,9 +18,15 @@ public abstract class RepositoryBase<TModel, TId, TEntity, TDbContext>(TDbContex
     {
         var entity = ToEntity(model);
         await Set.AddAsync(entity, ct);
-        await Context.SaveChangesAsync(ct); //Skall göra i Application (Service)??
+        //await Context.SaveChangesAsync(ct); //Skall göra i Application (Service)??
         return ToModel(entity);
     }
+
+
+
+
+
+
 
     public virtual async Task<IReadOnlyList<TModel>> GetAllAsync(CancellationToken ct = default)
     {
@@ -34,13 +40,20 @@ public abstract class RepositoryBase<TModel, TId, TEntity, TDbContext>(TDbContex
         return entity is null ? default : ToModel(entity);
     }
 
+
+
+
+
+
+
+
     public virtual async Task<bool> RemoveAsync(TId id, CancellationToken ct = default)
     {
         var entity = await Set.FindAsync([id], ct);
         if (entity is null) return false;
 
         Set.Remove(entity);
-        await Context.SaveChangesAsync(ct); //Skall göra i Application (Service)??
+        //await Context.SaveChangesAsync(ct); //Skall göra i Application (Service)??
         return true;
     }
 
@@ -54,7 +67,7 @@ public abstract class RepositoryBase<TModel, TId, TEntity, TDbContext>(TDbContex
 
         Context.Entry(entity).CurrentValues.SetValues(updated);
 
-        await Context.SaveChangesAsync(ct); //Skall göra i Application(Service)??
+        //await Context.SaveChangesAsync(ct); //Skall göra i Application(Service)??
 
         return ToModel(updated);
     }
