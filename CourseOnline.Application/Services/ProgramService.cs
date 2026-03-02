@@ -3,6 +3,7 @@ using CourseOnline.Application.Common.Results;
 using CourseOnline.Application.Contracts.Programs;
 using CourseOnline.Application.Factories;
 using CourseOnline.Application.Programs.DTOs.Inputs;
+using CourseOnline.Application.Programs.DTOs.Outputs;
 using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Domain.Models;
 
@@ -11,15 +12,15 @@ namespace CourseOnline.Application.Services;
 
 public sealed class ProgramService(IProgramRepository programRepo, IUnitOfWork uow) : IProgramService
 {
-    public async Task<Result<Program>> CreateProgramAsync(CreateProgramInput input, CancellationToken ct)
+    public async Task<Result<ProgramOutput>> CreateProgramAsync(CreateProgramInput input, CancellationToken ct)
     {
-        if(string.IsNullOrWhiteSpace(input.Name)) return Result<Program>.BadRequest("Program name is required.");
-        if (input.DurationWeeks <= 0) return Result<Program>.BadRequest("Duration weeks must be higher than zero");
-        if (input.MaxStudents <= 0) return Result<Program>.BadRequest("Limit of students must be higher than zero");
+        if(string.IsNullOrWhiteSpace(input.Name)) return Result<ProgramOutput>.BadRequest("Program name is required.");
+        if (input.DurationWeeks <= 0) return Result<ProgramOutput>.BadRequest("Duration weeks must be higher than zero");
+        if (input.MaxStudents <= 0) return Result<ProgramOutput>.BadRequest("Limit of students must be higher than zero");
 
         var existingProgram = await programRepo.GetByNameAsync(input.Name, ct);
 
-        if (existingProgram is not null) return Result<Program>.Conflict("Program already exists");
+        if (existingProgram is not null) return Result<ProgramOutput>.Conflict("Program already exists");
 
         var program = ProgramFactory.Create(input);
 
@@ -27,10 +28,14 @@ public sealed class ProgramService(IProgramRepository programRepo, IUnitOfWork u
 
         await uow.SaveChangesAsync(ct);
 
+        var output = await programRepo.GetOutputByIdAsync(program.Id, ct);
+        if (output is null)
+            return Result<ProgramOutput>.Conflict("Something went wrong.");
+
 
         //TODO: cache stuff
 
-        return Result<Program>.Ok(createdProgram);
+        return Result<ProgramOutput>.Ok(output);
     }
 
     public async Task<Result> DeleteProgramAsync(DeleteProgramInput input, CancellationToken ct)
@@ -75,19 +80,25 @@ public sealed class ProgramService(IProgramRepository programRepo, IUnitOfWork u
         return program is null ? Result<Program>.NotFound("Program not found") : Result<Program>.Ok(program);
     }
 
-    public async Task<Result<Program>> UpdateProgramAsync(UpdateProgramInput input, CancellationToken ct)
+    public async Task<Result<ProgramOutput>> UpdateProgramAsync(UpdateProgramInput input, CancellationToken ct)
     {
-        if (input.Id == Guid.Empty) return Result<Program>.BadRequest("Id required");
+        if (input.Id == Guid.Empty) return Result<ProgramOutput>.BadRequest("Id required");
 
         var programToUpdate = await programRepo.GetByIdAsync(input.Id, ct);
-
-        if (programToUpdate is null) return Result<Program>.NotFound("Education program not found.");
+        if (programToUpdate is null) return Result<ProgramOutput>.NotFound("Education program not found.");
 
         programToUpdate.Update(input.Name, input.DurationWeeks, input.MaxStudents);
 
-        var updatedProgram = await programRepo.UpdateAsync(input.Id, programToUpdate, ct);
-        if (updatedProgram is null) return Result<Program>.Conflict("Something went wrong");
+        var updated = await programRepo.UpdateAsync(input.Id, programToUpdate, ct);
+        if (updated is null)
+            return Result<ProgramOutput>.Conflict("Something went wrong");
 
-        return Result<Program>.Ok(updatedProgram);
+        await uow.SaveChangesAsync(ct);
+
+        var output = await programRepo.GetOutputByIdAsync(input.Id, ct);
+        if (output is null)
+            return Result<ProgramOutput>.Conflict("Something went wrong");
+
+        return Result<ProgramOutput>.Ok(output);
     }
 }

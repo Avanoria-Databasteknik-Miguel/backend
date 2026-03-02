@@ -9,19 +9,7 @@ public sealed class SchoolEntityConfigurations : IEntityTypeConfiguration<School
 {
     public void Configure(EntityTypeBuilder<SchoolEntity> builder)
     {
-        builder.ToTable("Schools", t =>
-            {
-                t.HasCheckConstraint(
-                    "CK_Schools_Name_NotEmpty",
-                    "LEN(LTRIM(RTRIM([Name]))) > 0"
-                );
-
-                t.HasCheckConstraint(
-                    "CK_Schools_StreetName_NotEmpty",
-                    "LEN(LTRIM(RTRIM([StreetName]))) > 0"
-                );
-            }
-        );
+        builder.ToTable("Schools");
 
         builder.HasKey(x => x.Id);
 

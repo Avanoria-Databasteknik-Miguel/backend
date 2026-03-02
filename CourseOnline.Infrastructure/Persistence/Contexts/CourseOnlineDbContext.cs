@@ -21,6 +21,63 @@ public sealed class CourseOnlineDbContext(DbContextOptions<CourseOnlineDbContext
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseOnlineDbContext).Assembly);
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CourseOnlineDbContext).Assembly);
+        if (Database.IsSqlServer())
+        {
+            modelBuilder.Entity<ProgramEntity>()
+                .ToTable("Programs", t => t.HasCheckConstraint(
+                    "CK_Programs_Name_NotEmpty",
+                    "LEN(LTRIM(RTRIM([Name]))) > 0"
+                ));
+
+            modelBuilder.Entity<StudentEntity>()
+                .ToTable("Students", t => t.HasCheckConstraint(
+                    "CK_Students_Email_NotEmpty",
+                    "LEN(LTRIM(RTRIM([Email]))) > 0"
+                ));
+
+            modelBuilder.Entity<TeacherEntity>()
+                .ToTable("Teachers", t => t.HasCheckConstraint(
+                    "CK_Teachers_Email_NotEmpty",
+                    "LEN(LTRIM(RTRIM([Email]))) > 0"
+                ));
+
+            modelBuilder.Entity<SchoolEntity>()
+                .ToTable("Schools", t =>
+                {
+                    t.HasCheckConstraint("CK_Schools_Name_NotEmpty", "LEN(LTRIM(RTRIM([Name]))) > 0");
+                    t.HasCheckConstraint("CK_Schools_StreetName_NotEmpty", "LEN(LTRIM(RTRIM([StreetName]))) > 0");
+                });
+        }
+        else if (Database.IsSqlite())
+        {
+            modelBuilder.Entity<ProgramEntity>()
+                .ToTable("Programs", t => t.HasCheckConstraint(
+                    "CK_Programs_Name_NotEmpty",
+                    "length(trim(Name)) > 0"
+                ));
+
+            modelBuilder.Entity<StudentEntity>()
+                .ToTable("Students", t => t.HasCheckConstraint(
+                    "CK_Students_Email_NotEmpty",
+                    "length(trim(Email)) > 0"
+                ));
+
+            modelBuilder.Entity<TeacherEntity>()
+                .ToTable("Teachers", t => t.HasCheckConstraint(
+                    "CK_Teachers_Email_NotEmpty",
+                    "length(trim(Email)) > 0"
+                ));
+
+            modelBuilder.Entity<SchoolEntity>()
+                .ToTable("Schools", t =>
+                {
+                    t.HasCheckConstraint("CK_Schools_Name_NotEmpty", "length(trim(Name)) > 0");
+                    t.HasCheckConstraint("CK_Schools_StreetName_NotEmpty", "length(trim(StreetName)) > 0");
+                });
+        }
+    }
     
 }

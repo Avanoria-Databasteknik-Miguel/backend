@@ -1,4 +1,5 @@
-﻿using CourseOnline.Application.Programs.Interfaces;
+﻿using CourseOnline.Application.Programs.DTOs.Outputs;
+using CourseOnline.Application.Programs.Interfaces;
 using CourseOnline.Domain.Models;
 using CourseOnline.Infrastructure.Persistence.Contexts;
 using CourseOnline.Infrastructure.Persistence.EFC.Entities;
@@ -28,5 +29,21 @@ public class ProgramRepository(CourseOnlineDbContext context) : RepositoryBase<P
     {
         var entity = await Context.Programs.AsNoTracking().SingleOrDefaultAsync(x => x.Name == name, ct);
         return entity is null ? null : ToModel(entity);
+    }
+
+    public async Task<ProgramOutput?> GetOutputByIdAsync(Guid id, CancellationToken ct)
+    {
+        return await Context.Programs
+        .AsNoTracking()
+        .Where(p => p.Id == id)
+        .Select(p => new ProgramOutput(
+            p.Id,
+            p.Name,
+            p.DurationWeeks,
+            p.MaxStudents,
+            p.CreatedAtUtc,
+            p.ModifiedAtUtc
+        ))
+        .SingleOrDefaultAsync(ct);
     }
 }
